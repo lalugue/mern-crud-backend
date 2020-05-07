@@ -40,6 +40,7 @@ let Todo = require('./todo.model')
 //define the routes
 const todoRoutes = express.Router()
 
+//Read all entries
 //upon access of '/' in browser..
 todoRoutes.route('/').get((req,res)=> {
    
@@ -58,6 +59,7 @@ todoRoutes.route('/').get((req,res)=> {
     
 })
 
+//Read a specific entry
 todoRoutes.route('/:id').get((req,res)=>{
     let id = req.params.id
     Todo.findById(id, (err,todo) =>{
@@ -65,8 +67,12 @@ todoRoutes.route('/:id').get((req,res)=>{
     })
 })
 
+//Create a new entry
 todoRoutes.route('/add').post((req,res)=>{
     let todo = new Todo(req.body)
+    
+    console.log('data to be inserted is: ')
+    console.log(req.body)
     todo.save()
         .then(todo => {
             res.status(200).json({'todo':'todo added successfully!'})
@@ -74,6 +80,30 @@ todoRoutes.route('/add').post((req,res)=>{
         .catch(err => {
             res.status(400).send('adding new todo failed!')
         })
+        
+})
+
+//Update an entry
+todoRoutes.route('/update/:id').post((req,res)=>{
+    
+    Todo.findById(req.params.id, (err,todo)=>{
+        if(!todo){
+            res.status(404).send("the todo was not found")
+        }
+        else{
+            todo.todo_description = req.body.todo_description
+            todo.todo_responsible = req.body.todo_responsible
+            todo.todo_priority = req.body.todo_priority
+            todo.todo_completed = req.body.todo_completed
+
+            todo.save().then(todo => {
+                res.json('todo updated!')
+            })
+            .catch(err => {
+                res.status(400).send("an error occurred in updating")
+            })
+        }
+    })
 })
 
 
