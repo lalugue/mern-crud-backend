@@ -3,7 +3,7 @@ const app = express()
 const bodyParser = require('body-parser')
 const cors = require('cors')
 const mongoose = require('mongoose')
-const PORT = 4000
+const constants = require('./constants')
 
 app.use(cors())
 app.use(bodyParser.json())
@@ -14,7 +14,7 @@ app.use(bodyParser.json())
 */
 
 const connection = mongoose.connection
-mongoose.connect('mongodb://127.0.0.1:27017/todos',{useNewUrlParser: true, useUnifiedTopology: true})
+mongoose.connect(constants.db,{useNewUrlParser: true, useUnifiedTopology: true})
 
 connection.on('connecting', ()=>{console.log("database is connecting")});
 
@@ -111,6 +111,6 @@ todoRoutes.route('/update/:id').post((req,res)=>{
 app.use('/todos', todoRoutes)
 
 
-app.listen(PORT, ()=> {
-    console.log("Server is running on Port: " + PORT)    
+app.listen(constants.PORT, ()=> {
+    console.log("Server is running on Port: " + constants.PORT)    
 })
