@@ -45,7 +45,7 @@ const todoRoutes = express.Router()
 todoRoutes.route('/').get((req,res)=> {
    
     //find Todo entry in database
-    Todo.find((err, todos)=> {
+    Todo.find({todo_deleted: {$ne: true}},(err, todos)=> {
         if (err) {
             console.log("An error occurred while finding a Todo in the database: ")
             console.log(err)
@@ -105,6 +105,26 @@ todoRoutes.route('/update/:id').post((req,res)=>{
         }
     })
 })
+
+//Delete an entry
+todoRoutes.route('/delete/:id').post((req,res)=>{
+
+    Todo.findById(req.params.id, (err,todo)=>{
+        if(!todo){
+            res.status(404).send("the todo was not found")
+        }
+        else{
+            todo.todo_deleted = true            
+            todo.todo_priority = 'Low'            
+            todo.save().then(todo => {
+                res.json('todo updated!')
+            })
+            .catch(err => {
+                res.status(400).send("an error occurred in updating")
+            })          
+        }
+    })
+ })
 
 
 //after defining the routes, use the routes
